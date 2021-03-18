@@ -1,0 +1,15 @@
+.cs142-userDetail-viewPhotosButton {
+  margin-top: 20px;
+  color: #ffffff;
+  font-size: 20px;
+  background-color: #4285f4;
+  padding: 10px;
+  border-radius: 10px;
+}
+.cs142-userDetail-linkStyle {
+  text-decoration: none;
+  color: #ffffff;
+}
+.cs142-userDetail-buttonDiv {
+  margin-top: 10px;
+}

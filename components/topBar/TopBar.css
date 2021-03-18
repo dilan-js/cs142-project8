@@ -1,0 +1,44 @@
+.cs142-topbar-appBar {
+  height: 120;
+  justify-content: "center";
+}
+
+.cs142-topbar-nameTitle {
+  background-color: #0f9d58;
+  padding: 10px;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 16px;
+  border-radius: 8px;
+  margin-right: 10px !important;
+  min-width: 130px;
+  text-align: center;
+}
+
+.cs142-top-mainTitle {
+  padding: 10px;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 16px;
+  border-radius: 8px;
+  margin-right: 10px !important;
+
+  text-align: center;
+}
+
+.cs142-topBar-right {
+  text-align: right;
+  width: 95%;
+}
+.cs142-topBar-left-link {
+  text-decoration: none;
+}
+
+.cs142-topbar-toolbar {
+  display: flex;
+}
+
+.cs142-topbar-loginTypography {
+  flex: 1;
+  text-align: center;
+}
