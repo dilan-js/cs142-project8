@@ -27,29 +27,50 @@ class PhotoDetailView extends React.Component {
   }
 
   onChange = (annotation) => {
-    console.log("ONCHANEG: ", annotation);
     this.setState({ annotation });
   };
   //referenced the docs for this
   onSubmit = (annotation) => {
     const { geometry, data } = annotation;
-
+    const user =
+      this.props.users.find((user) => user._id === data.taggedUser) || {};
+    const payload = {
+      geometry,
+      data: {
+        taggedUser: data.taggedUser,
+        id: Math.random(),
+        text: `${user.first_name} ${user.last_name}`,
+      },
+    };
+    console.log(payload);
     this.setState({
       annotation: {},
-      annotations: this.state.annotations.concat({
-        geometry,
-        data: {
-          ...data,
-          id: Math.random(),
-        },
-      }),
+      annotations: this.state.annotations.concat(payload),
     });
+    try {
+      axios.post(`/photo/${data.photoId}/tags`, payload);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   async getPhotoById(photoId) {
     try {
       const { data } = await axios.get("/photo/" + photoId);
-      this.setState({ userPhotos: data });
+      console.log(data);
+      const annotations = data[0].tags.map((tag) => {
+        const user =
+          this.props.users.find((user) => user._id === tag.data.taggedUser) ||
+          {};
+        return {
+          ...tag,
+          data: {
+            ...tag.data,
+            text: `${user.first_name} ${user.last_name}`,
+          },
+        };
+      });
+      this.setState({ userPhotos: data, annotations });
     } catch (error) {
       console.log(error);
     }
@@ -75,7 +96,15 @@ class PhotoDetailView extends React.Component {
   }
 
   componentDidMount() {
-    this.getPhotoById(this.props.match.params.photoId);
+    if (this.props.users.length > 0) {
+      this.getPhotoById(this.props.match.params.photoId);
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.users.length === 0 && this.props.users.length > 0) {
+      this.getPhotoById(this.props.match.params.photoId);
+    }
   }
 
   render() {
@@ -101,6 +130,9 @@ class PhotoDetailView extends React.Component {
                 value={this.state.annotation}
                 onChange={this.onChange}
                 onSubmit={this.onSubmit}
+                renderContent={({ annotation }) => {
+                  annotation.data.text;
+                }}
               />
 
               {/* <img

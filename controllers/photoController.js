@@ -37,7 +37,9 @@ const photoController = {
 
   //This function returns comments the include all comments made by a specific user.
   async getAllCommentsByUser(userId) {
-    var photos = await Photo.find().where("comments.user_id").equals(userId);
+    var photos = await Photo.find()
+      .where("comments.user_id")
+      .equals(userId);
     return photos;
   },
 
@@ -56,6 +58,39 @@ const photoController = {
   //This function adds a photo to the database and returns the photo.
   async addPhoto(path, userId) {
     return await Photo.create({ file_name: path, user_id: userId });
+  },
+
+  async getRecentAndPopularPhotos(userId) {
+    const photos = await Photo.find({ user_id: userId });
+    let specificPhotos = {
+      mostRecentPhoto: { id: 0, createdAt: 0, photo: {} },
+      mostPopularPhoto: { id: 0, numComments: 0, photo: {} },
+    };
+    photos.forEach((photo) => {
+      const createdAt = new Date(photo.date_time);
+      const numComments = photo.comments.length;
+      if (createdAt.getTime() > specificPhotos.mostRecentPhoto.createdAt) {
+        specificPhotos.mostRecentPhoto.id = photo._id;
+        specificPhotos.mostRecentPhoto.createdAt = createdAt.getTime();
+        specificPhotos.mostRecentPhoto.photo = photo;
+      }
+      if (numComments > specificPhotos.mostPopularPhoto.numComments) {
+        specificPhotos.mostPopularPhoto.id = photo._id;
+        specificPhotos.mostPopularPhoto.numComments = numComments;
+        specificPhotos.mostPopularPhoto.photo = photo;
+      }
+    });
+    if (specificPhotos.mostRecentPhoto.id === 0) {
+      delete specificPhotos.mostRecentPhoto;
+    }
+    if (specificPhotos.mostPopularPhoto.id === 0) {
+      delete specificPhotos.mostPopularPhoto;
+    }
+
+    return specificPhotos;
+  },
+  async addTag(photoId, tag) {
+    return await Photo.update({ _id: photoId }, { $push: { tags: tag } });
   },
 };
 

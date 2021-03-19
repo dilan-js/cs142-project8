@@ -14,14 +14,20 @@ class UserDetail extends React.Component {
     super(props);
     this.state = {
       user: null,
+      specificPhotos: [],
     };
     this.getUserDetail = this.getUserDetail.bind(this);
+    this.convertDate = this.convertDate.bind(this);
   }
 
   async getUserDetail(userId) {
     try {
       const { data } = await axios.get("/user/" + userId);
       this.setState({ user: data });
+      console.log("Here");
+      const response = await axios.get("/getMostRecentPopularPhoto/" + userId);
+      console.log(response);
+      this.setState({ specificPhotos: response.data });
     } catch (error) {
       console.log(error);
     }
@@ -35,7 +41,15 @@ class UserDetail extends React.Component {
     }
   }
 
+  convertDate() {
+    const date = new Date(
+      this.state.specificPhotos.mostRecentPhoto.photo.date_time
+    );
+    return date.toLocaleString();
+  }
+
   render() {
+    console.log(this.state.specificPhotos);
     if (this.state.user === null) {
       return <h1>No User Found!</h1>;
     } else {
@@ -60,6 +74,43 @@ class UserDetail extends React.Component {
                 View Photos
               </Button>
             </Link>
+          </div>
+          <div>
+            {this.state.specificPhotos.mostPopularPhoto ? (
+              <Link
+                style={{ textDecoration: "none", color: "black" }}
+                to={
+                  "/photoDetailView/" +
+                  this.state.specificPhotos.mostPopularPhoto.photo._id
+                }
+              >
+                <p>Most Popular Photo: </p>
+                <img
+                  style={{ width: 300 }}
+                  src={`./images/${this.state.specificPhotos.mostPopularPhoto.photo.file_name}`}
+                />
+                <p>
+                  {`${this.state.specificPhotos.mostPopularPhoto.photo.comments.length} comments`}
+                </p>
+              </Link>
+            ) : null}
+            {this.state.specificPhotos.mostRecentPhoto ? (
+              <Link
+                style={{ textDecoration: "none", color: "black" }}
+                to={
+                  "/photoDetailView/" +
+                  this.state.specificPhotos.mostRecentPhoto.photo._id
+                }
+              >
+                <p>Most Recent Photo: </p>
+
+                <img
+                  style={{ width: 300 }}
+                  src={`./images/${this.state.specificPhotos.mostRecentPhoto.photo.file_name}`}
+                />
+                <p>{`Posted on ${this.convertDate()}`}</p>
+              </Link>
+            ) : null}
           </div>
         </div>
       );

@@ -14,7 +14,7 @@ router.get(
   "/photosOfUser/:id",
   session.requiresLogin,
   session.parseUserId,
-  async function (request, response) {
+  async function(request, response) {
     let id = request.userId;
     const photos = await photoController.byUser(id);
     if (photos.length === 0) {
@@ -26,22 +26,54 @@ router.get(
   }
 );
 
+router.get(
+  "/getMostRecentPopularPhoto/:id",
+  session.requiresLogin,
+  async function(request, response) {
+    let id = request.params.id;
+    const specificPhotos = await photoController.getRecentAndPopularPhotos(id);
+    response.status(200).json(specificPhotos);
+  }
+);
+
 /*
  * URL /photo/:photoId - Returns a specific photo by its id
  */
-router.get(
-  "/photo/:photoId",
-  session.requiresLogin,
-  async function (request, response) {
-    let photoId = request.params.photoId;
-    const specificPhoto = await photoController.get(photoId);
-    if (specificPhoto === null) {
-      response.status(400).json({ msg: "Nothing found!" });
-      return;
-    }
-    response.status(200).json(specificPhoto);
+router.get("/photo/:photoId", session.requiresLogin, async function(
+  request,
+  response
+) {
+  let photoId = request.params.photoId;
+  const specificPhoto = await photoController.get(photoId);
+  if (specificPhoto === null) {
+    response.status(400).json({ msg: "Nothing found!" });
+    return;
   }
-);
+  response.status(200).json(specificPhoto);
+});
+
+router.post("/photo/:photoId/tags", session.requiresLogin, async function(
+  request,
+  response
+) {
+  const photoId = request.params.photoId;
+
+  const specificPhoto = await photoController.get(photoId);
+  if (specificPhoto === null) {
+    response.status(400).json({ msg: "Nothing found!" });
+    return;
+  }
+  // if (specificPhoto.tags) {
+  //   specificPhoto.tags.push(request.body);
+  // } else {
+  //   specificPhoto.tags = [request.body];
+  // }
+  const savedSpecificPhoto = await photoController.addTag(
+    photoId,
+    request.body
+  );
+  response.status(200).json(savedSpecificPhoto);
+});
 
 /*
  * URL /photos/new - Returns the photo the user uploaded after saving it to the database
@@ -50,7 +82,7 @@ router.post(
   "/photos/new",
   session.requiresLogin,
   upload.single("uploadedphoto"),
-  async function (request, response, next) {
+  async function(request, response, next) {
     if (!request.file) {
       response.status(400).json({ msg: "No file uploaded!" });
       next();

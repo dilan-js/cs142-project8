@@ -27,7 +27,7 @@ class TagUserSearch extends React.Component {
   handleChange(e) {
     const payload = {
       ...this.props.annotation,
-      data: { taggedUser: e.target.value },
+      data: { taggedUser: e.target.value, photoId: this.props.photoId },
     };
     this.props.onChange(payload);
   }
@@ -35,7 +35,7 @@ class TagUserSearch extends React.Component {
   handleSubmit(e) {
     const payload = {
       ...this.props.annotation,
-      data: { taggedUser: e.target.value },
+      data: { taggedUser: e.target.value, photoId: this.props.photoId },
     };
     this.props.onSubmit(payload);
   }
@@ -45,7 +45,7 @@ class TagUserSearch extends React.Component {
     return (
       <div style={styles.main}>
         <form onSubmit={this.handleSubmit}>
-          <button type="submit"></button>
+          <button type="submit">Save Tag</button>
           <select onChange={this.handleChange}>
             <option>Select User</option>
             {this.props.users.map((user) => (
