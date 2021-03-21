@@ -18,6 +18,7 @@ class PhotoDetailView extends React.Component {
       errorMessage: "",
       annotations: [],
       annotation: {},
+      activate: false,
     };
     this.getPhotoById = this.getPhotoById.bind(this);
     this.addComment = this.addComment.bind(this);
@@ -42,6 +43,7 @@ class PhotoDetailView extends React.Component {
         text: `${user.first_name} ${user.last_name}`,
       },
     };
+
     console.log(payload);
     this.setState({
       annotation: {},
@@ -125,13 +127,30 @@ class PhotoDetailView extends React.Component {
                     {...renderProps}
                   />
                 )}
-                annotations={this.state.annotations}
+                annotations={this.state.activate ? this.state.annotations : []}
                 type="RECTANGLE"
                 value={this.state.annotation}
                 onChange={this.onChange}
                 onSubmit={this.onSubmit}
                 renderContent={({ annotation }) => {
-                  annotation.data.text;
+                  console.log(annotation);
+                  return (
+                    <div
+                      style={{
+                        position: "absolute",
+                        backgroundColor: "#FFFFFF",
+                        fontSize: 30,
+                        left: `${annotation.geometry.x +
+                          annotation.geometry.width / 2}%`,
+                        top: `${annotation.geometry.y}%`,
+                      }}
+                      key={annotation.text}
+                    >
+                      <Link to={"/users/" + annotation.data.taggedUser}>
+                        {annotation.data.text}
+                      </Link>
+                    </div>
+                  );
                 }}
               />
 
@@ -140,6 +159,7 @@ class PhotoDetailView extends React.Component {
                 src={"/images/" + photo.file_name}
                 alt={photo.file_name}
               ></img> */}
+              <Button>Activate Annotations</Button>
               <Typography variant="h6">
                 Date & Time : {photo.date_time}
               </Typography>
