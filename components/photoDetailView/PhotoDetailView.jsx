@@ -117,49 +117,60 @@ class PhotoDetailView extends React.Component {
         <div>
           {this.state.userPhotos.map((photo) => (
             <React.Fragment key={photo._id}>
-              <Annotation
-                src={"/images/" + photo.file_name}
-                alt="Two pebbles anthropomorphized holding hands"
-                renderEditor={(renderProps) => (
-                  <TagUserSearch
-                    users={this.props.users}
-                    photoId={photo._id}
-                    {...renderProps}
-                  />
-                )}
-                annotations={this.state.activate ? this.state.annotations : []}
-                type="RECTANGLE"
-                value={this.state.annotation}
-                onChange={this.onChange}
-                onSubmit={this.onSubmit}
-                renderContent={({ annotation }) => {
-                  console.log(annotation);
-                  return (
-                    <div
-                      style={{
-                        position: "absolute",
-                        backgroundColor: "#FFFFFF",
-                        fontSize: 30,
-                        left: `${annotation.geometry.x +
-                          annotation.geometry.width / 2}%`,
-                        top: `${annotation.geometry.y}%`,
-                      }}
-                      key={annotation.text}
-                    >
-                      <Link to={"/users/" + annotation.data.taggedUser}>
-                        {annotation.data.text}
-                      </Link>
-                    </div>
-                  );
-                }}
-              />
+              {this.state.activate ? (
+                <Annotation
+                  src={"/images/" + photo.file_name}
+                  alt="Two pebbles anthropomorphized holding hands"
+                  renderEditor={(renderProps) => (
+                    <TagUserSearch
+                      users={this.props.users}
+                      photoId={photo._id}
+                      {...renderProps}
+                    />
+                  )}
+                  annotations={this.state.annotations}
+                  type="RECTANGLE"
+                  value={this.state.annotation}
+                  onChange={this.onChange}
+                  onSubmit={this.onSubmit}
+                  renderContent={({ annotation }) => {
+                    console.log(annotation);
+                    return (
+                      <div
+                        style={{
+                          position: "absolute",
+                          backgroundColor: "#FFFFFF",
+                          fontSize: 30,
+                          left: `${annotation.geometry.x +
+                            annotation.geometry.width / 2}%`,
+                          top: `${annotation.geometry.y}%`,
+                        }}
+                        key={annotation.text}
+                      >
+                        <Link to={"/users/" + annotation.data.taggedUser}>
+                          {annotation.data.text}
+                        </Link>
+                      </div>
+                    );
+                  }}
+                />
+              ) : (
+                <img src={"/images/" + photo.file_name} />
+              )}
 
               {/* <img
                 className="cs142-userPhotos-photo"
                 src={"/images/" + photo.file_name}
                 alt={photo.file_name}
               ></img> */}
-              <Button>Activate Annotations</Button>
+              <Button
+                style={{ marginTop: 10 }}
+                onClick={() =>
+                  this.setState({ activate: !this.state.activate })
+                }
+              >
+                Activate Annotations
+              </Button>
               <Typography variant="h6">
                 Date & Time : {photo.date_time}
               </Typography>
